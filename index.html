@@ -166,7 +166,7 @@
     </div>
     <div class="field">
       <label for="target-content">具体的な学習タスク（行動）</label>
-      <input type="text" id="target-content" placeholder="例: 気象・気温データからパウダースノーの条件を論述">
+      <input type="text" id="target-content" placeholder="例: 英単語">
     </div>
     <div class="field">
       <label for="target-amount">目標量（ページ数・問題数・字数など）</label>
@@ -178,7 +178,7 @@
     </div>
     <div class="field">
       <label for="target-criteria">達成基準（質的目標）</label>
-      <input type="text" id="target-criteria" placeholder="例: 指定語句をすべて使い200字でまとめる">
+      <input type="text" id="target-criteria" placeholder="例: 50%">
     </div>
     <div class="btn-group">
       <button onclick="saveTarget()">目標を保存（ホームへ）</button>
@@ -198,15 +198,15 @@
       <input type="number" id="actual-time" placeholder="例: 30">
     </div>
     <div class="field">
-      <label for="actual-understanding">理解度・定着度（質的KPI）</label>
+      <label for="actual-understanding">理解度・定着度</label>
       <select id="actual-understanding">
         <option value="A">A: 完璧（人に説明できるレベル）</option>
-        <option value="B">B: 概ね完了（一部復習が必要）</option>
+        <option value="B">B: まあまあ（一部復習が必要）</option>
         <option value="C">C: 不十分（基礎からやり直しが必要）</option>
       </select>
     </div>
     <div class="field">
-      <label for="actual-focus">集中度（質的KPI）</label>
+      <label for="actual-focus">集中度</label>
       <select id="actual-focus">
         <option value="5">5: 非常に集中できた</option>
         <option value="4">4: まあまあ集中できた</option>
@@ -302,7 +302,7 @@
     if (a.understanding === 'C') {
       html += `<div class="feedback-item alert">理解度が「C（不十分）」です。次に進む前に、必ず教科書や基礎問題集に戻りましょう。明日の目標はこの単元の「復習」に設定してください。</div>`;
     } else if (a.understanding === 'B') {
-      html += `<div class="feedback-item">理解度は「B（概ね完了）」です。記憶が定着するよう、3日後にもう一度同じ問題（タスク）を解く計画を立てましょう。</div>`;
+      html += `<div class="feedback-item">理解度は「B（まあまあ）」です。記憶が定着するよう、3日後にもう一度同じ問題（タスク）を解く計画を立てましょう。</div>`;
     } else {
       html += `<div class="feedback-item good">理解度は「A（完璧）」です！この調子で次のステップへ進みましょう。</div>`;
     }
