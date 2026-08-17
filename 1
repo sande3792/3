@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>受験生向け 目標・実績分析アプリ</title>
+  <style>
+    body {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      background-color: #f4f7f6;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    .card {
+      background: #ffffff;
+      padding: 24px;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+      width: 100%;
+      max-width: 400px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .screen {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+    .screen.active {
+      display: block;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    h2 {
+      margin-top: 0;
+      color: #2c3e50;
+      font-size: 1.5rem;
+      border-bottom: 2px solid #3498db;
+      padding-bottom: 8px;
+    }
+    .field {
+      margin-bottom: 16px;
+    }
+    label {
+      display: block;
+      font-size: 0.85em;
+      margin-bottom: 6px;
+      color: #7f8c8d;
+      font-weight: bold;
+    }
+    input[type="text"],
+    input[type="number"],
+    select {
+      width: 100%;
+      padding: 10px;
+      box-sizing: border-box;
+      border: 1px solid #bdc3c7;
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+    input:focus, select:focus {
+      outline: none;
+      border-color: #3498db;
+      box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+    }
+    .btn-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 24px;
+    }
+    button {
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      background-color: #3498db;
+      color: white;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+    button:hover {
+      background-color: #2980b9;
+    }
+    button:active {
+      transform: scale(0.98);
+    }
+    button.secondary {
+      background-color: #95a5a6;
+    }
+    button.secondary:hover {
+      background-color: #7f8c8d;
+    }
+    button.success {
+      background-color: #2ecc71;
+    }
+    button.success:hover {
+      background-color: #27ae60;
+    }
+    .info-box {
+      background: #ecf0f1;
+      padding: 16px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+    }
+    .info-box strong {
+      color: #2c3e50;
+      display: block;
+      margin-bottom: 8px;
+    }
+    .info-box p {
+      margin: 0;
+      color: #34495e;
+      line-height: 1.5;
+    }
+    .feedback-item {
+      margin-bottom: 12px;
+      padding-left: 12px;
+      border-left: 4px solid #3498db;
+    }
+    .feedback-item.alert {
+      border-left-color: #e74c3c;
+    }
+    .feedback-item.good {
+      border-left-color: #2ecc71;
+    }
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 0.75em;
+      background: #3498db;
+      color: white;
+      margin-bottom: 4px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <!-- 1. ホーム画面 -->
+  <div id="screen-home" class="screen active">
+    <h2>学習ホーム</h2>
+    <div class="info-box" id="latest-target-box">
+      <strong>前回設定した目標:</strong>
+      <p id="display-target">（まだ目標が設定されていません）</p>
+    </div>
+    <div class="btn-group">
+      <button onclick="showScreen('screen-target')">新しい目標を設定する</button>
+      <button onclick="showScreen('screen-actual')" class="success">実績を入力する</button>
+    </div>
+  </div>
+
+  <!-- 2. 目標画面 -->
+  <div id="screen-target" class="screen">
+    <h2>目標設定</h2>
+    <div class="info-box">
+      <p style="font-size: 0.85em;">「何を・どれくらい・どうなれば完了か」を具体的に設定します。</p>
+    </div>
+    <div class="field">
+      <label for="target-content">具体的な学習タスク（行動）</label>
+      <input type="text" id="target-content" placeholder="例: 気象・気温データからパウダースノーの条件を論述">
+    </div>
+    <div class="field">
+      <label for="target-amount">目標量（ページ数・問題数・字数など）</label>
+      <input type="number" id="target-amount" placeholder="例: 1">
+    </div>
+    <div class="field">
+      <label for="target-time">目標時間（分）</label>
+      <input type="number" id="target-time" placeholder="例: 20">
+    </div>
+    <div class="field">
+      <label for="target-criteria">達成基準（質的目標）</label>
+      <input type="text" id="target-criteria" placeholder="例: 指定語句をすべて使い200字でまとめる">
+    </div>
+    <div class="btn-group">
+      <button onclick="saveTarget()">目標を保存（ホームへ）</button>
+      <button class="secondary" onclick="showScreen('screen-home')">戻る</button>
+    </div>
+  </div>
+
+  <!-- 3. 実績画面 -->
+  <div id="screen-actual" class="screen">
+    <h2>実績入力</h2>
+    <div class="field">
+      <label for="actual-amount">実際に進んだ量（ページ・問題数など）</label>
+      <input type="number" id="actual-amount" placeholder="例: 1">
+    </div>
+    <div class="field">
+      <label for="actual-time">実際にかかった時間（分）</label>
+      <input type="number" id="actual-time" placeholder="例: 30">
+    </div>
+    <div class="field">
+      <label for="actual-understanding">理解度・定着度（質的KPI）</label>
+      <select id="actual-understanding">
+        <option value="A">A: 完璧（人に説明できるレベル）</option>
+        <option value="B">B: 概ね完了（一部復習が必要）</option>
+        <option value="C">C: 不十分（基礎からやり直しが必要）</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="actual-focus">集中度（質的KPI）</label>
+      <select id="actual-focus">
+        <option value="5">5: 非常に集中できた</option>
+        <option value="4">4: まあまあ集中できた</option>
+        <option value="3">3: 普通</option>
+        <option value="2">2: 気が散ることが多かった</option>
+        <option value="1">1: 全く集中できなかった</option>
+      </select>
+    </div>
+    <div class="btn-group">
+      <button onclick="analyzeResults()" class="success">分析する</button>
+      <button class="secondary" onclick="showScreen('screen-home')">戻る</button>
+    </div>
+  </div>
+
+  <!-- 4. 分析画面 -->
+  <div id="screen-analysis" class="screen">
+    <h2>分析・フィードバック</h2>
+    <div class="info-box" id="feedback-container">
+      <!-- JSで動的にフィードバックを生成 -->
+    </div>
+    <div class="btn-group">
+      <button onclick="showScreen('screen-home')">確認してホームへ戻る</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 学習データを保持するオブジェクト
+  let studyData = {
+    target: { content: '', amount: 0, time: 0, criteria: '' },
+    actual: { amount: 0, time: 0, understanding: '', focus: 0 }
+  };
+
+  function showScreen(screenId) {
+    document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+    document.getElementById(screenId).classList.add('active');
+  }
+
+  function saveTarget() {
+    studyData.target.content = document.getElementById('target-content').value || '未設定タスク';
+    studyData.target.amount = Number(document.getElementById('target-amount').value) || 0;
+    studyData.target.time = Number(document.getElementById('target-time').value) || 0;
+    studyData.target.criteria = document.getElementById('target-criteria').value || '特になし';
+
+    const displayHtml = `
+      <span class="badge">目標時間: ${studyData.target.time}分</span>
+      <span class="badge">目標量: ${studyData.target.amount}</span><br>
+      <strong>${studyData.target.content}</strong><br>
+      <small style="color:#7f8c8d;">達成基準: ${studyData.target.criteria}</small>
+    `;
+    document.getElementById('display-target').innerHTML = displayHtml;
+    
+    showScreen('screen-home');
+  }
+
+  function analyzeResults() {
+    // 実績データを取得
+    studyData.actual.amount = Number(document.getElementById('actual-amount').value) || 0;
+    studyData.actual.time = Number(document.getElementById('actual-time').value) || 0;
+    studyData.actual.understanding = document.getElementById('actual-understanding').value;
+    studyData.actual.focus = Number(document.getElementById('actual-focus').value);
+
+    generateFeedback();
+    showScreen('screen-analysis');
+  }
+
+  function generateFeedback() {
+    const t = studyData.target;
+    const a = studyData.actual;
+    let html = '';
+
+    // 1. 行動KPI（量と時間）の分析
+    html += '<strong>📊 行動と処理速度の分析</strong>';
+    
+    // 量の評価
+    if (a.amount < t.amount) {
+      html += `<div class="feedback-item alert">予定した量（${a.amount}/${t.amount}）が終わりませんでした。計画が過大だったか、タスクをより小さく分割する必要があります。</div>`;
+    } else {
+      html += `<div class="feedback-item good">目標量は予定通り（またはそれ以上）完了しました！</div>`;
+    }
+
+    // 時間の評価
+    if (a.time > t.time) {
+      const overRatio = ((a.time - t.time) / t.time * 100).toFixed(0);
+      html += `<div class="feedback-item alert">目標時間より${overRatio}%（${a.time - t.time}分）オーバーしています。基礎知識の不足で立ち止まっているか、解法パターンの暗記が足りない可能性があります。</div>`;
+    } else if (a.time < t.time && a.amount >= t.amount && a.understanding === 'A') {
+       html += `<div class="feedback-item good">予定より早く、高い理解度で終えられました。素晴らしいペースです。</div>`;
+    }
+
+    // 2. 質的KPI（理解度・集中度）の分析
+    html += '<strong style="margin-top:16px;">🧠 質と定着度の分析</strong>';
+    
+    if (a.understanding === 'C') {
+      html += `<div class="feedback-item alert">理解度が「C（不十分）」です。次に進む前に、必ず教科書や基礎問題集に戻りましょう。明日の目標はこの単元の「復習」に設定してください。</div>`;
+    } else if (a.understanding === 'B') {
+      html += `<div class="feedback-item">理解度は「B（概ね完了）」です。記憶が定着するよう、3日後にもう一度同じ問題（タスク）を解く計画を立てましょう。</div>`;
+    } else {
+      html += `<div class="feedback-item good">理解度は「A（完璧）」です！この調子で次のステップへ進みましょう。</div>`;
+    }
+
+    if (a.focus <= 2) {
+      html += `<div class="feedback-item alert">集中力が低下していました。スマホを別の部屋に置く、学習場所を変えるなど、明日は「環境を整えること」を最初のアクションにしてください。</div>`;
+    }
+
+    // 3. Next Action提案
+    html += '<strong style="margin-top:16px;">📝 次の具体的なアクション（Next Action）</strong>';
+    if (a.understanding === 'A' && a.amount >= t.amount) {
+      html += `<div class="feedback-item">現在の学習レベルは適切です。明日は一段階難易度を上げるか、別の弱点補強に時間を使いましょう。</div>`;
+    } else {
+      html += `<div class="feedback-item">今回の結果を踏まえ、次回の目標設定では「時間制限を少し緩める」または「基礎知識のインプット」を前提条件に組み込んでください。</div>`;
+    }
+
+    document.getElementById('feedback-container').innerHTML = html;
+  }
+</script>
+
+</body>
