@@ -237,7 +237,8 @@
   // 学習データを保持するオブジェクト
   let studyData = {
     target: { content: '', amount: 0, time: 0, criteria: '' },
-    actual: { amount: 0, time: 0, understanding: '', focus: 0 }
+    actual: { amount: 0, time: 0, understanding: '', focus: 0 },
+    isTargetSet: false // 目標が設定されているかのフラグを追加
   };
 
   function showScreen(screenId) {
@@ -250,6 +251,7 @@
     studyData.target.amount = Number(document.getElementById('target-amount').value) || 0;
     studyData.target.time = Number(document.getElementById('target-time').value) || 0;
     studyData.target.criteria = document.getElementById('target-criteria').value || '特になし';
+    studyData.isTargetSet = true; // 目標設定済みフラグをオン
 
     const displayHtml = `
       <span class="badge">目標時間: ${studyData.target.time}分</span>
@@ -263,6 +265,13 @@
   }
 
   function analyzeResults() {
+    // 目標未設定の場合のガイド
+    if (!studyData.isTargetSet) {
+      alert('先に「新しい目標を設定する」から目標を入力してください。');
+      showScreen('screen-target');
+      return;
+    }
+
     // 実績データを取得
     studyData.actual.amount = Number(document.getElementById('actual-amount').value) || 0;
     studyData.actual.time = Number(document.getElementById('actual-time').value) || 0;
@@ -288,12 +297,14 @@
       html += `<div class="feedback-item good">目標量は予定通り（またはそれ以上）完了しました！</div>`;
     }
 
-    // 時間の評価
-    if (a.time > t.time) {
+    // 時間の評価（t.time > 0 のガードを追加して Infinity% を防止）
+    if (t.time > 0 && a.time > t.time) {
       const overRatio = ((a.time - t.time) / t.time * 100).toFixed(0);
       html += `<div class="feedback-item alert">目標時間より${overRatio}%（${a.time - t.time}分）オーバーしています。基礎知識の不足で立ち止まっているか、解法パターンの暗記が足りない可能性があります。</div>`;
+    } else if (t.time === 0 && a.time > 0) {
+      html += `<div class="feedback-item">実績時間: ${a.time}分（※目標時間が未設定のため超過率は未計算）</div>`;
     } else if (a.time < t.time && a.amount >= t.amount && a.understanding === 'A') {
-       html += `<div class="feedback-item good">予定より早く、高い理解度で終えられました。素晴らしいペースです。</div>`;
+      html += `<div class="feedback-item good">予定より早く、高い理解度で終えられました。素晴らしいペースです。</div>`;
     }
 
     // 2. 質的KPI（理解度・集中度）の分析
